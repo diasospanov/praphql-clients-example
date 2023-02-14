@@ -1,9 +1,9 @@
 import { gql } from '@apollo/client';
-import Image from 'next/image';
 import { initializeApollo } from '../util/client';
-import GitHubProfile from './GitHubProfile';
+import ApolloClientProvider from './ApolloClientProvider';
+import GithubProfile from './GitHubProfile';
 
-type GitHubProfileResponse = {
+export type GitHubProfileResponse = {
   user: {
     name: string;
     avatarUrl: string;
@@ -20,19 +20,20 @@ type GitHubProfileResponse = {
 
 export default async function HomePage() {
   const client = initializeApollo(null);
-  const { data } = await client.query<GitHubProfileResponse>({
+
+  await client.query<GitHubProfileResponse>({
     query: gql`
-      query profileQuery($username: String = "diasospanov") {
+      query profileQuery($username: String = "prochaLu") {
         user(login: $username) {
           name
           avatarUrl
           repositories(last: 10) {
             edges {
               node {
+                id
                 name
                 defaultBranchRef {
                   name
-                  id
                 }
               }
             }
@@ -47,7 +48,7 @@ export default async function HomePage() {
       <ApolloClientProvider
         initialApolloState={JSON.stringify(client.cache.extract())}
       >
-        <GitHubProfile />
+        <GithubProfile />
       </ApolloClientProvider>
     </main>
   );
